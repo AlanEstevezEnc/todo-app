@@ -6,7 +6,7 @@ interface Props {
 }
 
 function PaginationMenu({ pageCount, paginaActual, onSelect }: Props) {
-  const activo = "active";
+  //const activo = "active";
   return (
     <>
       <nav aria-label="Page navigation example">
