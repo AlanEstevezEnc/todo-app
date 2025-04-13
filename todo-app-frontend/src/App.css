@@ -1,0 +1,14 @@
+.container {
+  margin-top: 2rem;
+}
+
+.filterBox {
+  padding: 20px;
+  border: solid;
+  border-width: 1px;
+  margin-bottom: 50px;
+}
+
+.metricsContainer {
+  margin-bottom: 5rem;
+}
