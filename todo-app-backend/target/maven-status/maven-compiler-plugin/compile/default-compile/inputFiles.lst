@@ -1,0 +1,6 @@
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/TodoApiApplication.java
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/api/controller/TodoController.java
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/api/exception/GlobalExceptionHandler.java
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/api/exception/TodoException.java
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/api/model/Todo.java
+/Users/alan.estevez/Desktop/todo-app/todo-app-backend/src/main/java/com/example/demo/service/TodoService.java

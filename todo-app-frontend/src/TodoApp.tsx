@@ -1,6 +1,3 @@
-//import { useState } from 'react'
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
 import FilterBox from "./components/FilterBox";
 import TodoTable from "./components/TodoTable";
 import "./App.css";
@@ -10,7 +7,6 @@ import TodoEditModal from "./components/TodoEditModal";
 import Metrics from "./components/Metrics";
 
 function TodoApp() {
-  //const [count, setCount] = useState(0)
   const [todoList, setTodo] = useState([]);
   const [pages, setPages] = useState(0);
   const [paginaActual, setPaginaActual] = useState(0);
@@ -20,7 +16,6 @@ function TodoApp() {
   const [nameFilter, setNameFilter] = useState("");
   const [prioFilter, setPrioFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
-  //const [totalPaginas, setTo talPaginas] = useState(0);
   const [sortOrder, setSortOrder] = useState("");
   const [sortField, setSortField] = useState("");
   const [metricStats, setMetricStats] = useState({
@@ -58,7 +53,6 @@ function TodoApp() {
   };
 
   const handleSelect = (i: number) => {
-    console.log(i);
     setPaginaActual(i);
   };
 
@@ -70,52 +64,44 @@ function TodoApp() {
     }
 
     setSortOrder(order);
-    //handleRecharge();
   };
 
   const handleRecharge = () => {
     setRecharge((prev) => !prev);
-    console.log("recargado " + recharge);
+    setReloadMetrics((prev) => !prev);
   };
 
   const handleMetricsReload = () => {
     setReloadMetrics((prev) => !prev);
-    console.log("recargado " + reloadMetrics);
   };
 
-  useEffect(
-    () => {
-      const fetchUsuarios = async () => {
-        try {
-          const response = await fetch(
-            //`http://localhost:9090/todos?page=${paginaActual}`
-            `http://localhost:9090/todos?page=${paginaActual}&s=${stateFilter}&p=${prioFilter}&n=${nameFilter}&sort=${sortField}&order=${sortOrder}`
-          );
-          const data = await response.json();
-          //console.log(data);
-          setPages(data.totalPages);
-          setTodo(data.content); // Asumiendo que 'content' tiene los usuarios
-          //setTotalPaginas(data.totalPages); // Asumiendo que 'totalPages' tiene el número total de páginas
-        } catch (error) {
-          console.error("Error al obtener los usuarios:", error);
-        }
-      };
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:9090/todos?page=${paginaActual}&s=${stateFilter}&p=${prioFilter}&n=${nameFilter}&sort=${sortField}&order=${sortOrder}`
+        );
+        const data = await response.json();
+        //console.log(data);
+        setPages(data.totalPages);
+        setTodo(data.content);
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+      }
+    };
 
-      fetchUsuarios();
-    },
-    [paginaActual, recharge, sortOrder, sortField] // [paginaActual]); // Se vuelve a llamar cuando cambia la página actual
-  );
+    fetchUsuarios();
+  }, [paginaActual, recharge, sortOrder, sortField]);
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
         const response = await fetch(`http://localhost:9090/todo/metrics`);
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         setMetricStats(data);
-        //setTotalPaginas(data.totalPages); // Asumiendo que 'totalPages' tiene el número total de páginas
       } catch (error) {
-        console.error("Error al obtener los usuarios:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
