@@ -166,6 +166,8 @@ function TodoEditModal({ mode, onClose, show, todoId, reload }: Props) {
 
   return (
     <>
+      <div className="modal-backdrop fade show"></div>
+
       <div
         className="modal fade show modal-lg"
         id="exampleModal"

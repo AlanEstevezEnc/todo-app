@@ -75,7 +75,11 @@ function FilterBox({ handleFilterList }: Props) {
             </select>
           </div>
           <div className="col-sm-2 offset-md-3">
-            <button className="btn btn-primary" onClick={handleSearch}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSearch}
+            >
               Search
             </button>
           </div>

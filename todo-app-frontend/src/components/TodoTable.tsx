@@ -196,7 +196,10 @@ function TodoTable(props: Props) {
         </thead>
         <tbody>
           {todoList.map((elemento, index) => (
-            <tr key={elemento.id}>
+            <tr
+              key={elemento.id}
+              className={estados[index] === true ? "strikethrough" : ""}
+            >
               <th scope="row">
                 <div className="form-check">
                   <input

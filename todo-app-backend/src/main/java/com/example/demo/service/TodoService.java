@@ -23,10 +23,7 @@ public class TodoService {
     int highCount = 0;
     int doneCount = 0;
 
-    int todoLow = 0;
-    int todoMid = 0;
-    int todoHigh = 0;
-
+    //Minutes average
     long lowAverage = 0;
     long midAverage = 0;
     long highAverage = 0;
@@ -34,30 +31,13 @@ public class TodoService {
 
     public TodoService() {
         todoList = new ArrayList<>();
+        
+
+        if(!todoList.isEmpty()){
+            idCount = todoList.toArray().length+1;
+        }
 
 
-        Todo todo1 = new Todo(1,"Tarea 1","Medium",2025,3,5);
-        Todo todo2 = new Todo(2,"Tarea 2","Low",2024,8,15);
-        Todo todo3 = new Todo(3,"Tarea 3","High",2026,10,21);
-        Todo todo4 = new Todo(4,"Task 4","High",2026,10,21);
-        Todo todo5 = new Todo(5,"Task 5","Low",2026,10,21);
-        Todo todo6 = new Todo(6,"Task 6","Low");
-        Todo todo7 = new Todo(7,"Task 7","Medium");
-        Todo todo8 = new Todo(8,"Tarea 8","High");
-        Todo todo9 = new Todo(9,"Tarea 9","High");
-        Todo todo10 = new Todo(10,"Tarea 10","High",2026,10,21);
-        Todo todo11 = new Todo(11,"Tarea 11","Medium",2026,10,21);
-        Todo todo12 = new Todo(12,"Tarea 12","High",2026,10,21);
-
-        todoList.addAll(Arrays.asList(todo1,todo2,todo3,todo4,todo5,todo6
-                ,todo7,todo8,todo9,todo10,todo11,todo12
-        ));
-
-        idCount = todoList.toArray().length+1;
-
-        todoLow = 3;
-        todoMid = 3;
-        todoHigh = 6;
 
     }
 
@@ -170,17 +150,6 @@ public class TodoService {
         newTodo.setId(idCount++);
         newTodo.setCreationDate(LocalDateTime.now());
 
-        switch (newTodo.getPriority()){
-            case("Low"):
-                todoLow+=1;
-                break;
-            case("Medium"):
-                todoMid+=1;
-                break;
-            case("High"):
-                todoHigh+=1;
-                break;
-        }
 
         todoList.add(newTodo);
 
@@ -215,8 +184,60 @@ public class TodoService {
             todoEditable.setTaskName(taskName);
         }
 
+
+        if(todoEditable.isTodoState()){
+
+            Duration timeBetween = Duration.between(todoEditable.getCreationDate(),todoEditable.getCompletionDate());
+            long minBetween = timeBetween.toMinutes();
+
+            switch (todoEditable.getPriority()){
+                case("High"):
+                    highCount-=1;
+                    highAverage -= minBetween;
+                    break;
+
+                case("Medium"):
+                    mediumCount-=1;
+                    midAverage -= minBetween;
+                    break;
+
+                case("Low"):
+                    lowCount-=1;
+                    lowAverage -= minBetween;
+                    break;
+            }
+
+        }
+
+
+
+
+
         if (prio != null && !prio.isEmpty() && !prio.equals(todoEditable.getPriority())){
             todoEditable.setPriority(prio);
+
+            if(todoEditable.isTodoState()){
+
+                Duration timeBetween = Duration.between(todoEditable.getCreationDate(),todoEditable.getCompletionDate());
+                long minBetween = timeBetween.toMinutes();
+
+                switch (prio){
+                    case("Low"):
+                        lowCount+=1;
+                        lowAverage+= minBetween;
+                        break;
+                    case("Medium"):
+                        mediumCount+=1;
+                        midAverage+= minBetween;
+                        break;
+                    case("High"):
+                        highCount+=1;
+                        highAverage+= minBetween;
+                        break;
+                }
+            }
+
+
         }
 
 
@@ -332,26 +353,30 @@ public class TodoService {
                 }
             }
 
+            if (todoDelete.isTodoState()) {
+
             Duration timeBetween = Duration.between(todoDelete.getCreationDate(),todoDelete.getCompletionDate());
             long minBetween = timeBetween.toMinutes();
 
-            switch (todoDelete.getPriority()){
-                case("High"):
-                    highCount-=1;
-                    highAverage -= minBetween;
-                    break;
+                switch (todoDelete.getPriority()){
+                    case("High"):
+                        highCount-=1;
+                        highAverage -= minBetween;
+                        break;
 
-                case("Medium"):
-                    mediumCount-=1;
-                    midAverage -= minBetween;
-                    break;
+                    case("Medium"):
+                        mediumCount-=1;
+                        midAverage -= minBetween;
+                        break;
 
-                case("Low"):
-                    lowCount-=1;
-                    lowAverage -= minBetween;
-                    break;
+                    case("Low"):
+                        lowCount-=1;
+                        lowAverage -= minBetween;
+                        break;
+                }
+                doneCount--;
             }
-            doneCount--;
+
 
             todoList.remove(todoDelete);
             return ("Removed succesfully");
@@ -371,7 +396,7 @@ public class TodoService {
         if(doneCount == 0){
             return metrics;
         }else{
-
+            System.out.println(lowCount+" "+mediumCount+" "+highCount);
             if(lowAverage > 0){
                 long promedio = lowAverage / lowCount;
                 long h = promedio / 60;
@@ -392,12 +417,14 @@ public class TodoService {
                 long m = promedio % 60;
                 metrics.put("highAverage",h+":"+m);
             }
-
+            System.out.println(lowAverage+" "+midAverage+" "+highAverage);
             long total = (lowAverage + midAverage + highAverage) / doneCount;
+
             long h = total / 60;
             long m = total % 60;
             metrics.put("Average",h+":"+m);
 
+            System.out.println(metrics);
             return metrics;
 
         }

@@ -12,3 +12,8 @@
 .metricsContainer {
   margin-bottom: 5rem;
 }
+
+.strikethrough {
+  text-decoration: line-through;
+  color: black;
+}

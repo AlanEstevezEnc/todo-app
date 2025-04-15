@@ -3,15 +3,8 @@ import { render, screen } from "@testing-library/react";
 import TodoTable from "./TodoTable";
 import { describe, it, expect, vi } from "vitest";
 
-describe("TodoApp", () => {
-  it("Main app render with Add Todo button", () => {
-    /*
-    id: number;
-  taskName: string;
-  priority: string;
-  dueDate: string;
-  todoState: boolean;*/
-
+describe("TodoTable", () => {
+  it("Render main todoTable", () => {
     const mockTodoList = [
       {
         id: 1,
