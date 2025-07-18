@@ -36,8 +36,24 @@ function TodoTable(props: Props) {
       nuevosEstados[index] = !nuevosEstados[index];
       return nuevosEstados;
     });
-    //Funciion
     setDoneUndone(index, id);
+  };
+
+  const getRowBackgroundColor = (dueDate: string | null): string => {
+    if (!dueDate) return ""; // No background color for no due date
+
+    const today = new Date();
+    const dueDateObj = new Date(dueDate);
+    const diffInDays = Math.ceil(
+      (dueDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffInDays <= 7) {
+      return "table-danger"; // Red background for 1 week or less
+    } else if (diffInDays <= 14) {
+      return "table-warning"; // Yellow background for 2 weeks or less
+    } else {
+      return "table-success"; // Green background for more than 2 weeks
+    }
   };
 
   const handlePriority = () => {
@@ -81,9 +97,7 @@ function TodoTable(props: Props) {
   }, [sortField, sortOrder]);
 
   const setDoneUndone = (index: number, id: number) => {
-    //console.log(index);
     if (!estados[index]) {
-      //console.log("truers");
       const DoneTodo = async () => {
         try {
           const response = await fetch(
@@ -93,7 +107,7 @@ function TodoTable(props: Props) {
             }
           );
           if (response.ok) {
-            const data = await response.json(); // Si la respuesta es exitosa, procesamos la respuesta
+            const data = await response.json();
             console.log("Success:", data);
             handleMetricsReload();
           } else {
@@ -114,7 +128,7 @@ function TodoTable(props: Props) {
             }
           );
           if (response.ok) {
-            const data = await response.json(); // Si la respuesta es exitosa, procesamos la respuesta
+            const data = await response.json();
             console.log("Success:", data);
             handleMetricsReload();
           } else {
@@ -127,8 +141,6 @@ function TodoTable(props: Props) {
 
       unDoneTodo();
     }
-
-    //reload();
   };
 
   const handleDelete = (id: number) => {
@@ -198,7 +210,9 @@ function TodoTable(props: Props) {
           {todoList.map((elemento, index) => (
             <tr
               key={elemento.id}
-              className={estados[index] === true ? "strikethrough" : ""}
+              className={`${
+                estados[index] === true ? "strikethrough" : ""
+              } ${getRowBackgroundColor(elemento.dueDate)}`}
             >
               <th scope="row">
                 <div className="form-check">
@@ -217,10 +231,9 @@ function TodoTable(props: Props) {
               <td>{elemento.dueDate}</td>
               <td className="">
                 <button
-                  className="btn btn-primary" //onClick={handleOpenModal}>
+                  className="btn btn-primary"
                   onClick={() => {
                     setTodoEdit(elemento.id);
-                    //console.log("Todo id: " + todoId);
                     handleOpenModal();
                   }}
                 >

@@ -15,8 +15,6 @@ function FilterBox({ handleFilterList }: Props) {
   const [stateFilter, setStateFilter] = useState("");
 
   const handleSearch = () => {
-    //console.log(nameFilter, prioFilter, stateFilter);
-
     handleFilterList(nameFilter, prioFilter, stateFilter);
   };
 
@@ -44,13 +42,14 @@ function FilterBox({ handleFilterList }: Props) {
           </label>
           <div className="col-sm-4">
             <select
+              id="selectPriority" // <-- Add this
               className="form-select"
-              aria-label="Default select example"
+              aria-label="Priority select"
               onChange={(e) => {
                 setPrioFilter(e.target.value);
               }}
             >
-              <option selected>All</option>
+              <option value="">All</option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
@@ -63,13 +62,14 @@ function FilterBox({ handleFilterList }: Props) {
           </label>
           <div className="col-sm-4">
             <select
+              id="selectState" // <-- Add this
               className="form-select"
-              aria-label="Default select example"
+              aria-label="State select"
               onChange={(e) => {
                 setStateFilter(e.target.value);
               }}
             >
-              <option selected>All</option>
+              <option value="">All</option>
               <option value="true">Done</option>
               <option value="false">Undone</option>
             </select>

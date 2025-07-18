@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Props {
   mode: Boolean;
@@ -37,9 +38,7 @@ function TodoEditModal({ mode, onClose, show, todoId, reload }: Props) {
 
           const fetchTodo = async () => {
             try {
-              const response = await fetch(
-                `http://localhost:9090/todo?id=${todoId}`
-              );
+              const response = await fetch(`${API_BASE_URL}/todo?id=${todoId}`);
               const data = await response.json();
               console.log(data);
               setTaskName(data.taskName);
@@ -99,7 +98,7 @@ function TodoEditModal({ mode, onClose, show, todoId, reload }: Props) {
         //Create todo
         const createTodo = async () => {
           try {
-            const response = await fetch(`http://localhost:9090/todos`, {
+            const response = await fetch(`${API_BASE_URL}/todos`, {
               method: "post",
               headers: {
                 "Content-Type": "application/json",
@@ -130,20 +129,17 @@ function TodoEditModal({ mode, onClose, show, todoId, reload }: Props) {
         if (todoId) {
           const editTodo = async () => {
             try {
-              const response = await fetch(
-                `http://localhost:9090/todos/${todoId}`,
-                {
-                  method: "put",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    taskName: taskName,
-                    priority: prioString,
-                    dueDate: date,
-                  }),
-                }
-              );
+              const response = await fetch(`${API_BASE_URL}/todos/${todoId}`, {
+                method: "put",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  taskName: taskName,
+                  priority: prioString,
+                  dueDate: date,
+                }),
+              });
               if (response.ok) {
                 const data = await response.json(); // Si la respuesta es exitosa, procesamos la respuesta
                 console.log("Operación exitosa:", data);
@@ -237,7 +233,7 @@ function TodoEditModal({ mode, onClose, show, todoId, reload }: Props) {
                 </div>
                 <div className="row mb-3 ">
                   <label
-                    htmlFor="selectState"
+                    htmlFor="datePicker"
                     className="col-sm-2 col-form-label"
                   >
                     Due date

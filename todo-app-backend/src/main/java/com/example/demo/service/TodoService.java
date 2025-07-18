@@ -29,6 +29,9 @@ public class TodoService {
     long highAverage = 0;
     private int idCount = 0;
 
+    private Map<String, String> cachedMetrics = new HashMap<>();
+    private boolean metricsNeedUpdate = true;
+
     public TodoService() {
         todoList = new ArrayList<>();
         
@@ -152,6 +155,7 @@ public class TodoService {
 
 
         todoList.add(newTodo);
+        metricsNeedUpdate = true;
 
         return newTodo;
     }
@@ -251,6 +255,7 @@ public class TodoService {
             }
         }
 
+        metricsNeedUpdate = true;
 
         return todoEditable;
     }
@@ -292,6 +297,7 @@ public class TodoService {
                     break;
             }
             doneCount++;
+            metricsNeedUpdate = true;
 
         }
 
@@ -336,6 +342,7 @@ public class TodoService {
                     break;
             }
             doneCount--;
+            metricsNeedUpdate = true;
 
         }
         todoEditable.setCompletionDate(null);
@@ -379,58 +386,59 @@ public class TodoService {
 
 
             todoList.remove(todoDelete);
+            metricsNeedUpdate = true;
             return ("Removed succesfully");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Map<String,String> getTodoMetrics() {
+    public Map<String, String> getTodoMetrics() {
+        if (cachedMetrics.isEmpty() || metricsNeedUpdate) {
+            cachedMetrics = calculateMetrics();
+            metricsNeedUpdate = false;
+        }
+        return cachedMetrics;
+    }
 
+    private Map<String, String> calculateMetrics() {
         Map<String, String> metrics = new HashMap<>();
-        metrics.put("Average","00:00");
-        metrics.put("lowAverage","00:00");
-        metrics.put("midAverage","00:00");
-        metrics.put("highAverage","00:00");
+        metrics.put("Average", "00:00");
+        metrics.put("lowAverage", "00:00");
+        metrics.put("midAverage", "00:00");
+        metrics.put("highAverage", "00:00");
 
-        if(doneCount == 0){
-            return metrics;
-        }else{
-            System.out.println(lowCount+" "+mediumCount+" "+highCount);
-            if(lowAverage > 0){
+        if (doneCount > 0) {
+            System.out.println(lowCount + " " + mediumCount + " " + highCount);
+            if (lowAverage > 0) {
                 long promedio = lowAverage / lowCount;
                 long h = promedio / 60;
                 long m = promedio % 60;
-                metrics.put("lowAverage",h+":"+m);
+                metrics.put("lowAverage", h + ":" + m);
             }
 
-            if (midAverage >0){
+            if (midAverage > 0) {
                 long promedio = midAverage / mediumCount;
                 long h = promedio / 60;
                 long m = promedio % 60;
-                metrics.put("midAverage",h+":"+m);
+                metrics.put("midAverage", h + ":" + m);
             }
 
-            if(highAverage > 0){
+            if (highAverage > 0) {
                 long promedio = highAverage / highCount;
                 long h = promedio / 60;
                 long m = promedio % 60;
-                metrics.put("highAverage",h+":"+m);
+                metrics.put("highAverage", h + ":" + m);
             }
-            System.out.println(lowAverage+" "+midAverage+" "+highAverage);
+            System.out.println(lowAverage + " " + midAverage + " " + highAverage);
             long total = (lowAverage + midAverage + highAverage) / doneCount;
 
             long h = total / 60;
             long m = total % 60;
-            metrics.put("Average",h+":"+m);
+            metrics.put("Average", h + ":" + m);
 
             System.out.println(metrics);
-            return metrics;
-
         }
-
-
-
-
+        return metrics;
     }
 }

@@ -7,6 +7,8 @@ interface Props {
   };
 }
 
+const sanitize = (value: string) => value.replace(/[^a-zA-Z0-9: ]/g, "");
+
 function Metrics({ metricStats }: Props) {
   return (
     <>
@@ -20,9 +22,9 @@ function Metrics({ metricStats }: Props) {
           </div>
           <div className="col-6 ">
             <h4>Average time to finish tasks by priority:</h4>
-            <p>Low: {metricStats.lowAverage} Hours:Minutes</p>
-            <p>Medium: {metricStats.midAverage} Hours:Minutes</p>
-            <p>High: {metricStats.highAverage} Hours:Minutes</p>
+            <p>Low: {sanitize(metricStats.lowAverage)} Hours:Minutes</p>
+            <p>Medium: {sanitize(metricStats.midAverage)} Hours:Minutes</p>
+            <p>High: {sanitize(metricStats.highAverage)} Hours:Minutes</p>
           </div>
         </div>
       </div>

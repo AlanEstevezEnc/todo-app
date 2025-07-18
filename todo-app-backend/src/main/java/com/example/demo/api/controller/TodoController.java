@@ -1,11 +1,10 @@
 package com.example.demo.api.controller;
 
-
 import com.example.demo.api.exception.TodoException;
 import com.example.demo.api.model.Todo;
 import com.example.demo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,97 +17,72 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:8080")
 public class TodoController {
 
-    private TodoService todoService;
+    private final TodoService todoService;
 
     @Autowired
-    public TodoController(TodoService todoService){
+    public TodoController(TodoService todoService) {
         this.todoService = todoService;
-
     }
 
     @GetMapping("/todo/all")
-    public List<Todo> getAllTodos(){
-        List<Todo> todo = todoService.getAllTodos();
-        return todo;
-
+    public ResponseEntity<List<Todo>> getAllTodos() {
+        List<Todo> todos = todoService.getAllTodos();
+        return ResponseEntity.ok(todos);
     }
 
-    @GetMapping(value = "/todos",params = {"page"})
-    public PageImpl<Todo> getAllTodosPaginados(@RequestParam("page") int page, @RequestParam("n") Optional<String> name,
-                                               @RequestParam("p") Optional<String> prio,@RequestParam("s") Optional<Boolean> state
-    ,@RequestParam("sort") Optional<String> sorting, @RequestParam("order")Optional<String> sortDirection){
-
-
-
-        return todoService.getAllTodosPaginados(page,name,prio,state,sorting,sortDirection);
-
-
+    @GetMapping(value = "/todos", params = {"page"})
+    public ResponseEntity<Page<Todo>> getAllTodosPaginados(
+            @RequestParam("page") int page,
+            @RequestParam("n") Optional<String> name,
+            @RequestParam("p") Optional<String> prio,
+            @RequestParam("s") Optional<Boolean> state,
+            @RequestParam("sort") Optional<String> sorting,
+            @RequestParam("order") Optional<String> sortDirection
+    ) {
+        Page<Todo> result = todoService.getAllTodosPaginados(page, name, prio, state, sorting, sortDirection);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/todo")
-    public Todo getTodo(@RequestParam int id){
+    public ResponseEntity<Todo> getTodo(@RequestParam int id) {
         Optional<Todo> todo = todoService.getTodo(id);
-        if(todo.isPresent()){
-            return (Todo) todo.get();
-        }
-        return null;
+        return todo.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/todos")
-    public ResponseEntity<Object> addTodo(@RequestBody Todo newTodo){
-        try{
-            Todo nTodo = todoService.addTodo(newTodo);
-            return new ResponseEntity<>(nTodo, HttpStatus.CREATED);
-        } catch (TodoException e) {
-            throw e;
-        }
+    public ResponseEntity<Todo> addTodo(@RequestBody Todo newTodo) {
+        Todo nTodo = todoService.addTodo(newTodo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nTodo);
     }
 
     @DeleteMapping("/todos")
-    public ResponseEntity<Object> deleteTodo(@RequestParam int id){
-        try{
-            String res = todoService.deleteTodo(id);
-            return new ResponseEntity<>(res, HttpStatus.CREATED);
-        } catch (TodoException e) {
-            throw e;
-        }
+    public ResponseEntity<Void> deleteTodo(@RequestParam int id) {
+        todoService.deleteTodo(id);
+        return ResponseEntity.noContent().build(); 
     }
 
     @PutMapping("/todos/{id}")
-    public ResponseEntity<Object> editTodo(@PathVariable int id,@RequestBody Todo editTodo){
-        try{
-            Todo eTodo = todoService.editTodo(id,editTodo);
-            return new ResponseEntity<>(eTodo, HttpStatus.ACCEPTED);
-        }catch (TodoException e){
-            throw e;
-        }
+    public ResponseEntity<Todo> editTodo(@PathVariable int id, @RequestBody Todo editTodo) {
+        Todo eTodo = todoService.editTodo(id, editTodo);
+        return ResponseEntity.ok(eTodo); 
     }
 
     @PutMapping("/todos/{id}/done")
-    public ResponseEntity<Object> editTodoDone(@PathVariable int id){
-        try{
-            Todo eTodo = todoService.editTodoDone(id);
-            return new ResponseEntity<>(eTodo, HttpStatus.ACCEPTED);
-        }catch (TodoException e){
-            throw e;
-        }
+    public ResponseEntity<Todo> editTodoDone(@PathVariable int id) {
+        Todo eTodo = todoService.editTodoDone(id);
+        return ResponseEntity.ok(eTodo); 
     }
 
     @PutMapping("/todos/{id}/undone")
-    public ResponseEntity<Object> editTodoUndone(@PathVariable int id){
-        try{
-            Todo eTodo = todoService.editTodoUndone(id);
-            return new ResponseEntity<>(eTodo, HttpStatus.ACCEPTED);
-        }catch (TodoException e){
-            throw e;
-        }
+    public ResponseEntity<Todo> editTodoUndone(@PathVariable int id) {
+        Todo eTodo = todoService.editTodoUndone(id);
+        return ResponseEntity.ok(eTodo); 
     }
 
     @GetMapping("/todo/metrics")
-    public ResponseEntity<Object> getTodoMetrics(){
-        Map<String,String> todosAverage = todoService.getTodoMetrics();
-        return new ResponseEntity<>(todosAverage, HttpStatus.ACCEPTED);
-
+    public ResponseEntity<Map<String, String>> getTodoMetrics() {
+        Map<String, String> todosAverage = todoService.getTodoMetrics();
+        return ResponseEntity.ok(todosAverage);
     }
-
 }

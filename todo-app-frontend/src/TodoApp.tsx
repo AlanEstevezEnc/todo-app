@@ -1,10 +1,15 @@
 import FilterBox from "./components/FilterBox";
 import TodoTable from "./components/TodoTable";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, SetStateAction } from "react";
+import { debounce } from "lodash";
 import PaginationMenu from "./components/PaginationMenu";
 import TodoEditModal from "./components/TodoEditModal";
 import Metrics from "./components/Metrics";
+import.meta.env.VITE_API_BASE_URL;
+
+//const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:9090";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function TodoApp() {
   const [todoList, setTodo] = useState([]);
@@ -31,25 +36,30 @@ function TodoApp() {
     setOpenModal(!openModal);
   };
 
+  const debouncedFilterList = useCallback(
+    debounce(
+      (
+        filtroNombre: SetStateAction<string>,
+        filtroPrio: SetStateAction<string>,
+        filtroState: SetStateAction<string>
+      ) => {
+        setNameFilter(filtroNombre);
+        setPrioFilter(filtroPrio === "All" ? "" : filtroPrio);
+        setStateFilter(filtroState === "All" ? "" : filtroState);
+        setPaginaActual(0);
+        setRecharge((prev) => !prev);
+      },
+      300
+    ),
+    []
+  );
+
   const handleFilterList = (
     filtroNombre: string,
     filtroPrio: string,
     filtroState: string
   ) => {
-    if (filtroPrio === "All") {
-      setPrioFilter("");
-    } else {
-      setPrioFilter(filtroPrio);
-    }
-    if (filtroState === "All") {
-      setStateFilter("");
-    } else {
-      setStateFilter(filtroState);
-    }
-
-    setNameFilter(filtroNombre);
-    setPaginaActual(0);
-    setRecharge(!recharge);
+    debouncedFilterList(filtroNombre, filtroPrio, filtroState);
   };
 
   const handleSelect = (i: number) => {
@@ -79,7 +89,7 @@ function TodoApp() {
     const fetchUsuarios = async () => {
       try {
         const response = await fetch(
-          `http://localhost:9090/todos?page=${paginaActual}&s=${stateFilter}&p=${prioFilter}&n=${nameFilter}&sort=${sortField}&order=${sortOrder}`
+          `${API_BASE_URL}/todos?page=${paginaActual}&s=${stateFilter}&p=${prioFilter}&n=${nameFilter}&sort=${sortField}&order=${sortOrder}`
         );
         const data = await response.json();
         //console.log(data);
@@ -96,7 +106,7 @@ function TodoApp() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch(`http://localhost:9090/todo/metrics`);
+        const response = await fetch(`${API_BASE_URL}/todo/metrics`);
         const data = await response.json();
         //console.log(data);
         setMetricStats(data);

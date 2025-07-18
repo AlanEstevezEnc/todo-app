@@ -17,6 +17,7 @@ public class Todo {
     private LocalDateTime completionDate;
 
     public Todo(){
+
     }
 
     public Todo(int id, String taskName, String priority, int year, int month, int day){

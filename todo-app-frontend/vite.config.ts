@@ -8,6 +8,10 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: "./setupTests.ts",
+    coverage: {
+      provider: "v8", // or 'c8'
+      reporter: ["text", "html"], // You can also use 'json', 'lcov', etc.
+    },
   },
   server: { port: 8080 },
 });
